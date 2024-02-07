@@ -1,0 +1,371 @@
+-- CLIENTS
+CREATE TABLE Clients (
+    Client_ID INT PRIMARY KEY NOT NULL,
+    First_Name VARCHAR(50) NOT NULL,
+    Last_Name VARCHAR(50) NOT NULL,
+    Phone VARCHAR(255) NOT NULL UNIQUE,
+    NIP VARCHAR(10)
+);
+
+
+-- ROLES
+CREATE TABLE Roles (
+    Role INT PRIMARY KEY NOT NULL,
+    Name VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- USERS
+CREATE TABLE Users (
+    User_ID INT PRIMARY KEY NOT NULL,
+    Client_ID INT,
+    Role INT NOT NULL,
+    Email VARCHAR(255) NOT NULL UNIQUE,
+    FOREIGN KEY (Client_ID) REFERENCES Clients(Client_ID),
+    FOREIGN KEY (Role) REFERENCES Roles(Role),
+    CONSTRAINT CHECK_Email_Format CHECK (Email LIKE '%_@__%.%')
+);
+
+
+
+-- RESERVATION STATUSES
+CREATE TABLE Reservation_Statuses (
+    Reservation_Status INT PRIMARY KEY NOT NULL,
+    Name VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- RESERVATIONS
+CREATE TABLE Reservations (
+    Reservation_ID INT PRIMARY KEY NOT NULL,
+    Client_ID INT NOT NULL,
+    Reservation_Status INT NOT NULL,
+    Date_From DATETIME NOT NULL,
+    Date_To DATETIME NOT NULL,
+    Created_Date DATETIME NOT NULL,
+    CONSTRAINT CHECK_Date_Order CHECK (Date_From < Date_To),
+    CONSTRAINT CHK_ResDates CHECK (Created_Date < Date_From),
+    FOREIGN KEY (Client_ID) REFERENCES Clients(Client_ID),
+    FOREIGN KEY (Reservation_Status) REFERENCES Reservation_Statuses(Reservation_Status)
+);
+
+-- TABLES
+CREATE TABLE Tables (
+    Table_ID INT PRIMARY KEY NOT NULL,
+    Seat_Amount INT NOT NULL CHECK (Seat_Amount > 0)
+);
+
+-- RESERVATION DETAILS
+CREATE TABLE Reservation_Details (
+    Reservation_ID INT NOT NULL,
+    Table_ID INT NOT NULL,
+    First_Name VARCHAR(50) NOT NULL,
+    Last_Name VARCHAR(50) NOT NULL,
+    FOREIGN KEY (Reservation_ID) REFERENCES Reservations(Reservation_ID),
+    FOREIGN KEY (Table_ID) REFERENCES Tables(Table_ID)
+);
+
+
+-- ORDER TYPES
+CREATE TABLE Order_Types (
+    Order_Type INT PRIMARY KEY NOT NULL,
+    Name VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- ORDER_STATUSES
+CREATE TABLE Order_Statuses (
+    Order_Status INT PRIMARY KEY NOT NULL,
+    Name VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- PAYMENT STATUSES
+CREATE TABLE Payment_Statuses (
+    Payment_Status INT PRIMARY KEY NOT NULL,
+    Name VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- ORDERS
+CREATE TABLE Orders (
+    Order_ID INT PRIMARY KEY NOT NULL,
+    Client_ID INT NOT NULL,
+    Payment_Status INT NOT NULL,
+    Order_Status INT NOT NULL,
+    Order_Type INT NOT NULL,
+    Order_Date DATETIME NOT NULL,
+    Created_Date DATETIME NOT NULL,
+    FOREIGN KEY (Client_ID) REFERENCES Clients(Client_ID),
+    FOREIGN KEY (Payment_Status) REFERENCES Payment_Statuses(Payment_Status),
+    FOREIGN KEY (Order_Status) REFERENCES Order_Statuses(Order_Status),
+    FOREIGN KEY (Order_Type) REFERENCES Order_Types(Order_Type),
+    CONSTRAINT CHK_OrderDates CHECK (Created_Date < Order_Date)
+);
+
+-- CATEGORIES
+CREATE TABLE Categories (
+    Category INT PRIMARY KEY NOT NULL,
+    Name VARCHAR(255) NOT NULL UNIQUE,
+    Description VARCHAR(500) NOT NULL
+);
+
+-- PRODUCTS
+CREATE TABLE Products (
+    Product_ID INT PRIMARY KEY NOT NULL,
+    Category INT NOT NULL,
+    Name VARCHAR(255) NOT NULL UNIQUE,
+    Description VARCHAR(500) NOT NULL,
+    Price FLOAT NOT NULL CHECK (Price > 0),
+    FOREIGN KEY (Category) REFERENCES Categories(Category)
+);
+
+-- ORDER DETAILS
+CREATE TABLE Order_Details (
+    Order_ID INT NOT NULL,
+    Product_ID INT NOT NULL,
+    Amount INT NOT NULL CHECK (Amount > 0),
+    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID),
+    FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID)
+);
+
+
+-- INSERT INTO
+INSERT INTO Clients (Client_ID, First_Name, Last_Name, Phone, NIP)
+VALUES
+(1, 'John', 'Doe', '123456789', '1234567890'),
+(2, 'Jane', 'Smith', '987654321', '0987654321'),
+(3, 'Bob', 'Johnson', '555123456', NULL),
+(4, 'Alice', 'Williams', '777888999', '1112233445'),
+(5, 'Charlie', 'Brown', '111222333', '9876543210'),
+(6, 'Eve', 'Anderson', '444555666', NULL);
+
+
+
+INSERT INTO Roles (Role, Name)
+VALUES
+(1, 'Admin'),
+(2, 'Waiter'),
+(3, 'Chef'),
+(4, 'Client'),
+(5, 'Manager'),
+(6, 'Cashier');
+
+
+
+INSERT INTO Users (User_ID, Client_ID, Role, Email)
+VALUES
+(1, 1, 4, 'john.doe@example.com'),
+(2, 2, 4, 'jane.smith@example.com'),
+(3, 3, 4, 'bob.johnson@example.com'),
+(4, 4, 4, 'alice.williams@example.com'),
+(5, 5, 4, 'charlie.brown@example.com'),
+(6, 6, 4, 'eve.anderson@example.com');
+
+INSERT INTO Reservation_Statuses (Reservation_Status, Name)
+VALUES
+(1, 'Completed'),
+(2, 'Confirmed'),
+(3, 'Cancelled'),
+(4, 'Arrived');
+
+INSERT INTO Reservations (Reservation_ID, Client_ID, Reservation_Status, Date_From, Date_To, Created_Date)
+VALUES
+(1, 1, 1, '2024-02-01 18:00:00', '2024-02-01 20:00:00', '2024-01-15 10:30:00'),
+(2, 2, 2, '2024-02-05 19:30:00', '2024-02-05 21:30:00', '2024-01-20 14:45:00'),
+(3, 3, 3, '2024-02-10 12:00:00', '2024-02-10 14:00:00', '2024-01-25 08:20:00'),
+(4, 4, 1, '2024-02-15 20:00:00', '2024-02-15 22:00:00', '2024-02-01 16:10:00'),
+(5, 5, 2, '2024-02-20 17:30:00', '2024-02-20 19:30:00', '2024-02-05 12:55:00'),
+(6, 6, 4, '2024-02-25 15:00:00', '2024-02-25 17:00:00', '2024-02-10 09:40:00');
+
+INSERT INTO Tables (Table_ID, Seat_Amount)
+VALUES
+(1, 4),
+(2, 2),
+(3, 6),
+(4, 8),
+(5, 3),
+(6, 5);
+
+-- Dla tabeli Reservation_Details
+INSERT INTO Reservation_Details (Reservation_ID, Table_ID, First_Name, Last_Name)
+VALUES
+(1, 1, 'John', 'Doe'),
+(2, 2, 'Jane', 'Smith'),
+(3, 3, 'Bob', 'Johnson'),
+(4, 4, 'Alice', 'Williams'),
+(5, 5, 'Charlie', 'Brown'),
+(6, 6, 'Eve', 'Anderson');
+
+-- Dla tabeli Order_Types
+INSERT INTO Order_Types (Order_Type, Name)
+VALUES
+(1, 'Takeout'),
+(2, 'Dine-in'),
+(3, 'Delivery');
+
+-- Dla tabeli Order_Statuses
+INSERT INTO Order_Statuses (Order_Status, Name)
+VALUES
+(1, 'Confirmed'),
+(2, 'In Progress'),
+(3, 'Completed'),
+(4, 'Cancelled');
+
+-- Dla tabeli Payment_Statuses
+INSERT INTO Payment_Statuses (Payment_Status, Name)
+VALUES
+(1, 'In progress'),
+(2, 'Paid'),
+(3, 'Failed');
+
+-- Dla tabeli Orders
+INSERT INTO Orders (Order_ID, Client_ID, Payment_Status, Order_Status, Order_Type, Order_Date, Created_Date)
+VALUES
+(1, 1, 1, 2, 1, '2024-02-01 12:30:00', '2024-02-01 10:00:00'),
+(2, 2, 2, 4, 2, '2024-02-05 19:30:00', '2024-02-05 18:00:00'),
+(3, 3, 1, 1, 3, '2024-02-10 13:45:00', '2024-02-10 12:30:00'),
+(4, 4, 2, 3, 2, '2024-02-15 21:15:00', '2024-02-15 20:00:00'),
+(5, 5, 2, 4, 1, '2024-02-20 18:45:00', '2024-02-20 18:00:00'),
+(6, 6, 1, 2, 3, '2024-02-25 16:30:00', '2024-02-25 15:00:00');
+
+-- Dla tabeli Categories
+INSERT INTO Categories (Category, Name, Description)
+VALUES
+(1, 'Appetizers', 'Delicious starters to whet your appetite'),
+(2, 'Main Courses', 'Heartwarming and fulfilling main dishes'),
+(3, 'Desserts', 'Sweet delights to satisfy your sweet tooth'),
+(4, 'Beverages', 'Refreshing drinks for all occasions');
+
+-- Dla tabeli Products
+INSERT INTO Products (Product_ID, Category, Name, Description, Price)
+VALUES
+(1, 1, 'Garlic Bread', 'Toasty slices of bread with garlic and butter', 5.99),
+(2, 2, 'Chicken Alfredo', 'Creamy pasta with grilled chicken', 12.99),
+(3, 3, 'Chocolate Brownie', 'Rich and gooey chocolate brownie', 7.99),
+(4, 4, 'Sparkling Water', 'Carbonated and refreshing', 2.49),
+(5, 1, 'Bruschetta', 'Tomato and basil on crispy bread', 6.99),
+(6, 2, 'Grilled Salmon', 'Juicy salmon fillet with herbs', 18.99);
+
+-- Dla tabeli Order_Details
+INSERT INTO Order_Details (Order_ID, Product_ID, Amount)
+VALUES
+(1, 1, 2),
+(2, 3, 1),
+(3, 5, 1),
+(4, 2, 1),
+(5, 4, 3),
+(6, 6, 1);
+
+
+
+-- FUNCTIONS
+
+-- Funkcja oblicza łączny koszt wszystkich zamówień dla określonego klienta.
+CREATE FUNCTION CalculateTotalOrderCostForClient(clientID INT) RETURNS DECIMAL(10, 2)
+BEGIN
+    DECLARE totalCost DECIMAL(10, 2);
+
+    SELECT SUM(Products.Price * Order_Details.Amount) INTO totalCost
+    FROM Orders
+    JOIN Order_Details ON Orders.Order_ID = Order_Details.Order_ID
+    JOIN Products ON Order_Details.Product_ID = Products.Product_ID
+    WHERE Orders.Client_ID = clientID;
+
+    RETURN totalCost;
+end;
+
+
+-- Przykład użycia funkcji dla klienta o ID równym 1
+SELECT CalculateTotalOrderCostForClient(1) AS TotalOrderCostForClient1;
+
+
+-- Funckja sprawdza, czy określony klient ma aktywne rezerwacje o statusach "Potwierdzone" (2) lub "Przybyłe" (4)
+
+CREATE FUNCTION SprawdzRezerwacje(ClientID INT)
+RETURNS BOOLEAN
+BEGIN
+  DECLARE MaRezerwacje BOOLEAN;
+
+  SELECT COUNT(*) INTO MaRezerwacje
+  FROM Reservations
+  WHERE Client_ID = ClientID
+    AND Reservation_Status IN (2, 4); -- Zakładamy, że status 2 to "Potwierdzone", a 4 to "Przybyłe"
+
+  RETURN MaRezerwacje;
+END;
+
+SELECT SprawdzRezerwacje(3) AS MaRezerwacje;
+
+-- Liczbę osób, które dokonały rezerwacji na dany dzień.
+
+CREATE FUNCTION GetClientCountOnDate(target_date DATE)
+RETURNS INTEGER
+BEGIN
+    DECLARE client_count INTEGER;
+
+    SELECT COUNT(DISTINCT c.Client_ID)
+    INTO client_count
+    FROM Clients c
+    JOIN Reservations r ON c.Client_ID = r.Client_ID
+    WHERE target_date BETWEEN DATE(r.Date_From) AND DATE(r.Date_To);
+
+    RETURN client_count;
+END;
+
+SELECT GetClientCountOnDate('2024-03-01') AS ClientCountOnDate_2024_01_22;
+
+
+
+-- VIEWS
+
+
+-- Widok Klienci z niezapłaconymi zamowieniami:
+CREATE VIEW Clients_With_Unpaid_Orders AS
+SELECT DISTINCT c.Client_ID, c.First_Name, c.Last_Name, c.Phone, c.NIP
+FROM Clients c
+JOIN Orders o ON c.Client_ID = o.Client_ID
+WHERE o.Payment_Status = 1; -- Status 1 oznacza "W trakcie"
+
+SELECT * FROM Clients_With_Unpaid_Orders;
+
+
+
+-- Widok na odwołana rezerwacje
+CREATE VIEW Orders_With_Cancelled_Reservation AS
+SELECT o.Order_ID, r.Reservation_ID, o.Order_Date
+FROM Orders o
+JOIN Reservations r ON o.Client_ID = r.Client_ID
+WHERE r.Reservation_Status = 3; -- Status 3 oznacza "Anulowana"
+
+SELECT * FROM Orders_With_Cancelled_Reservation;
+
+
+
+-- TRIGGERS
+
+-- Triger uniemożliwiający wstawianie rezerwacji, jeśli Date_From jest większe niż Date_To:
+CREATE TRIGGER PreventInvalidReservation
+BEFORE INSERT
+ON Reservations
+FOR EACH ROW
+BEGIN
+    IF NEW.Date_From >= NEW.Date_To THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Nieprawidłowe daty rezerwacji.';
+    END IF;
+END;
+
+
+-- Trigger aktualizujący pole Total_Amount w tabeli Orders po dodaniu nowego produktu do zamówienia
+
+CREATE TRIGGER UpdateOrderTotalAmount
+AFTER INSERT
+ON Order_Details
+FOR EACH ROW
+BEGIN
+    -- Aktualizuj pole Total_Amount w tabeli Orders
+    UPDATE Orders
+    SET Total_Amount = (
+        SELECT SUM(Price * Amount)
+        FROM Order_Details
+        JOIN Products ON Order_Details.Product_ID = Products.Product_ID
+        WHERE Order_Details.Order_ID = NEW.Order_ID
+    )
+    WHERE Order_ID = NEW.Order_ID;
+END;
+
