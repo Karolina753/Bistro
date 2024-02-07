@@ -1,7 +1,7 @@
-Stworzenie systemu wspomagającego działalność bistra.
+# Stworzenie systemu wspomagającego działalność bistra.
 
 
-Tabele:
+# Tabele:
 Tabela 1 - CLIENTS
 Tabela 2 - ROLES
 Tabela 3 - USERS
@@ -18,12 +18,12 @@ Tabela 13 - PRODUCTS
 Tabela 14 - ORDER DETAILS
 
 
-Insert, Select:
+# Insert, Select:
 
 Każda tabela została opatrzona odpowiednimi poleceniami INSERT oraz SELECT.
 
 
-Funkcje:
+# Funkcje:
 
 Funkcja 1: Funkcja oblicza łączny koszt wszystkich zamówień dla określonego klienta.
 
@@ -33,12 +33,12 @@ Funkcja 2: Funckja sprawdza, czy określony klient ma aktywne rezerwacje o statu
 Funkcja 3: Funkcja, która zwraca liczbe klientów na dany dzień.
 
 
-Procedura:
+# Procedura:
 
 Procedura, która sprawdza czy klient ma na sobie rezerwacje czy nie.
 
 
-Widoki:
+# Widoki:
 
 Widok 1: Widok Klienci z niezapłaconymi zamowieniami.
 
@@ -47,7 +47,7 @@ Widok 2: Widok na klienta z łączną ilością zamówień.
 Widok 3: Widok na odwołana rezerwacje.
 
 
-Triggery:
+# Triggery:
 
 Trigger 1: Trigger, który uniemożliwia wstawianie rezerwacji, jeśli data początkowa.
 
