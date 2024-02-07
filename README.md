@@ -3,18 +3,31 @@
 
 # Tabele:
 Tabela 1 - CLIENTS
+
 Tabela 2 - ROLES
+
 Tabela 3 - USERS
+
 Tabela 4 - RESERVATION STATUSES
+
 Tabela 5 - RESERVATIONS
+
 Tabela 6 - TABLES
+
 Tabela 7 - RESERVATION DETAILS
+
 Tabela 8 - ORDER TYPES
+
 Tabela 9 - ORDER_STATUSES
+
 Tabela 10 - PAYMENT STATUSES
+
 Tabela 11 - ORDERS
+
 Tabela 12 - CATEGORIES
+
 Tabela 13 - PRODUCTS
+
 Tabela 14 - ORDER DETAILS
 
 
